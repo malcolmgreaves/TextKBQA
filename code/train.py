@@ -11,6 +11,7 @@ import pdb
 
 
 class Trainer(object):
+
     def __init__(self):
         with tf.Session() as sess:
             print('Blake hack for acquiring gpu')
@@ -97,7 +98,8 @@ class Trainer(object):
 
         # loss
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(output, self.answer)
-        self.loss = tf.reduce_mean(cross_entropy, name="loss_op")  # COMMENT(manzilz): replace with mean?
+        # COMMENT(manzilz): replace with mean?
+        self.loss = tf.reduce_mean(cross_entropy, name="loss_op")
 
         if use_kb and use_text:
             # Graph created now load/save op for it
@@ -128,11 +130,13 @@ class Trainer(object):
         attn_weight = None
         preds = []
         for data in tqdm(self.dev_batcher.get_next_batch()):
-            # TODO(rajarshd): move the if-check outside the loop, so that conditioned is not checked every damn time. the conditions are suppose to be immutable.
+            # TODO(rajarshd): move the if-check outside the loop, so that conditioned
+            # is not checked every damn time. the conditions are suppose to be
+            # immutable.
 
             if use_kb and use_text:
                 dev_batch_question, dev_batch_q_lengths, dev_batch_answer, dev_batch_memory, dev_batch_num_memories, \
-                dev_batch_text_key_mem, dev_batch_text_key_len, dev_batch_text_val_mem, dev_batch_num_text_mems = data
+                    dev_batch_text_key_mem, dev_batch_text_key_len, dev_batch_text_val_mem, dev_batch_num_text_mems = data
                 feed_dict_dev = {self.question: dev_batch_question,
                                  self.question_lengths: dev_batch_q_lengths,
                                  self.answer: dev_batch_answer,
@@ -148,7 +152,7 @@ class Trainer(object):
                                  self.memory: dev_batch_memory}
             elif use_text:
                 dev_batch_question, dev_batch_q_lengths, dev_batch_answer, dev_batch_text_key_mem, dev_batch_text_key_len, \
-                dev_batch_text_val_mem, dev_batch_num_text_mems = data
+                    dev_batch_text_val_mem, dev_batch_num_text_mems = data
                 feed_dict_dev = {self.question: dev_batch_question,
                                  self.question_lengths: dev_batch_q_lengths,
                                  self.answer: dev_batch_answer,
@@ -157,7 +161,8 @@ class Trainer(object):
                                  self.text_val_mem: dev_batch_text_val_mem}
 
             dev_batch_loss_value, dev_prediction, batch_attn_weight, attn_wts_shape = sess.run(
-                [self.loss, self.predict_op, self.model.attn_weights_all_hops, tf.shape(self.model.attn_weights)],
+                [self.loss, self.predict_op, self.model.attn_weights_all_hops,
+                    tf.shape(self.model.attn_weights)],
                 feed_dict=feed_dict_dev)
             # pdb.set_trace()
 
@@ -205,6 +210,12 @@ class Trainer(object):
         train_loss = 0.0
         batch_counter = 0
         train_acc = 0.0
+
+        history_train_acc = []
+        stopping_range = 2
+        tolerance = 1e-6
+        terminate = False
+
         with tf.Session(config=tf.ConfigProto(log_device_placement=False)) as sess:
             sess.run(self.initialize())
 
@@ -221,11 +232,13 @@ class Trainer(object):
                 print('Starting to train')
                 for data in self.batcher.get_next_batch():
                     # COMMENT(manzilz): I don't like this style
-                    # TODO(rajarshd): move the if-check outside the loop, so that conditioned is not checked every damn time. the conditions are suppose to be immutable.
+                    # TODO(rajarshd): move the if-check outside the loop, so that conditioned
+                    # is not checked every damn time. the conditions are suppose to be
+                    # immutable.
                     batch_counter += 1
                     if use_kb and use_text:
                         batch_question, batch_q_lengths, batch_answer, batch_memory, batch_num_memories, \
-                        batch_text_key_mem, batch_text_key_len, batch_text_val_mem, batch_num_text_mems = data
+                            batch_text_key_mem, batch_text_key_len, batch_text_val_mem, batch_num_text_mems = data
                         feed_dict = {self.question: batch_question,
                                      self.question_lengths: batch_q_lengths,
                                      self.answer: batch_answer,
@@ -241,7 +254,7 @@ class Trainer(object):
                                      self.memory: batch_memory}
                     elif use_text:
                         batch_question, batch_q_lengths, batch_answer, batch_text_key_mem, batch_text_key_len, \
-                        batch_text_val_mem, batch_num_text_mems = data
+                            batch_text_val_mem, batch_num_text_mems = data
                         feed_dict = {self.question: batch_question,
                                      self.question_lengths: batch_q_lengths,
                                      self.answer: batch_answer,
@@ -252,15 +265,29 @@ class Trainer(object):
                     # train
                     batch_loss_value, _, prediction = sess.run([self.loss, self.train_op, self.predict_op],
                                                                feed_dict=feed_dict)
-                    batch_train_acc = (1.0 * np.sum(prediction == batch_answer) / (batch_question.shape[0]))
+                    batch_train_acc = (1.0 * np.sum(prediction == batch_answer) /
+                                       (batch_question.shape[0]))
 
                     train_loss = 0.98 * train_loss + 0.02 * batch_loss_value
                     train_acc = 0.98 * train_acc + 0.02 * batch_train_acc
-                    print('\t at iter {0:10d} at time {1:10.4f}s train loss: {2:10.4f}, train_acc: {3:10.4f} '.format(
+
+                    print('\t at iter {0:10d} at time {1:10.8f}s train loss: {2:10.8f}, train_acc: {3:10.8f} '.format(
                         batch_counter,
                         time.time() - self.start_time,
                         train_loss, train_acc))
-                    if batch_counter != 0 and batch_counter % dev_eval_counter == 0:  # predict on dev
+
+                    if len(history_train_acc) >= stopping_range:
+                        avg_recent_train_acc = sum(
+                            history_train_acc[-stopping_range:]) / float(stopping_range)
+
+                        if abs(avg_recent_train_acc - train_acc) <= tolerance:
+                            print(
+                                "Stopping training because recent difference in train accuracy is smaller than %f" % train_acc)
+                            terminate = True
+
+                    history_train_acc.append(train_acc)
+
+                    if terminate or (batch_counter != 0 and batch_counter % dev_eval_counter == 0):  # predict on dev
                         dev_acc, dev_loss = self.dev_eval(sess)
                         print('\t at iter {0:10d} at time {1:10.4f}s dev loss: {2:10.4f} dev_acc: {3:10.4f} '.format(
                             batch_counter, time.time() - self.start_time, dev_loss, dev_acc))
@@ -269,15 +296,21 @@ class Trainer(object):
                             # save this model
                             save_path = self.saver.save(sess, output_dir + "/max_dev_out.ckpt")
                             if use_kb and use_text:
-                                save_path = self.full_saver.save(sess, output_dir + "/full_max_dev_out.ckpt")
+                                save_path = self.full_saver.save(
+                                    sess, output_dir + "/full_max_dev_out.ckpt")
                             with open(output_dir + "/dev_accuracies.txt", mode='a') as out:
                                 out.write(
                                     'Dev accuracy while writing max_dev_out.ckpt {0:10.4f}\n'.format(self.max_dev_acc))
                             print("Saved model")
-                        if batch_counter % save_counter == 0:
+
+                        if terminate or (batch_counter % save_counter == 0):
                             save_path = self.saver.save(sess, output_dir + "/out.ckpt")
                             print("Saved model")
-                            
+
+                    if terminate:
+                        print("Ending becuase terminate is now true")
+                        return
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
