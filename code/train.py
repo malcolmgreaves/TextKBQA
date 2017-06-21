@@ -282,8 +282,9 @@ class Trainer(object):
 
                         if abs(avg_recent_train_acc - train_acc) <= tolerance:
                             print("Stopping training because recent difference in train accuracy "
-                                  "is smaller than %f (%f - %f)" % tolerance, avg_recent_train_acc,
-                                  train_acc)
+                                  "is smaller than {} ({} - {})".format(tolerance,
+                                                                        avg_recent_train_acc,
+                                                                        train_acc))
                             terminate = True
 
                     history_train_acc.append(train_acc)

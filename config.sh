@@ -44,4 +44,4 @@ if [ $create_expt_dir -eq 1 ]; then
 else
     echo "WARNING!!! - create_expt_dir is not set. No output will be written."
 fi
-print_attention_weights=0
+print_attention_weights=1
