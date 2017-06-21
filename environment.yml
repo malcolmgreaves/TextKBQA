@@ -1,0 +1,9 @@
+name: TextKBQA
+dependencies:
+  - python=2.7
+  - tqdm
+  - pytest=3.1.*
+  - sphinx
+  - pip:
+    - tensorflow==0.12
+    
