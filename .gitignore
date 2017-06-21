@@ -1,3 +1,5 @@
 *.pyc
 kb/freebase.spades.txt
 text_kb/text_kb.spades.txt
+expt_outputs/
+
