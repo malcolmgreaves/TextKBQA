@@ -2,12 +2,16 @@
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 ROOT_DIR=$(pwd)
 vocab_dir="$ROOT_DIR/vocab/"
+
 kb_file="$ROOT_DIR/kb/freebase.spades.txt"
 #kb_file="$ROOT_DIR/kb/small_demo_kb.txt"
 text_kb_file="$ROOT_DIR/text_kb/text_kb.spades.txt"
 #text_kb_file="$ROOT_DIR/text_kb/small_demo_text_kb.txt"
-train_file="$ROOT_DIR/data_formatted/small_train_with_kb_and_text_facts.json"
-dev_file="$ROOT_DIR/data_formatted/small_dev_with_kb_and_text_facts.json"
+#train_file="$ROOT_DIR/data_formatted/small_train_with_kb_and_text_facts.json"
+train_file="$ROOT_DIR/data_formatted/train_with_kb_and_text_facts.json"
+test_file="$ROOT_DIR/data_formatted/test_with_kb_and_text_facts.json"
+#dev_file="$ROOT_DIR/data_formatted/small_dev_with_kb_and_text_facts.json"
+dev_file="$ROOT_DIR/data_formatted/dev_with_kb_and_text_facts.json"
 combine_text_kb_answer='batch_norm'
 CANVAS_DIR="$ROOT_DIR/expt_outputs"
 OUTPUT_DIR=$CANVAS_DIR/demo_run/${current_time}
