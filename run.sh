@@ -34,7 +34,7 @@ fi
 if [ $print_attention_weights -eq 1 ]; then
     cmd="$python_path -u $ROOT_DIR/code/qual_eval.py --use_kb $use_kb --use_text $use_text --kb_file $kb_file
     --text_kb_file $text_kb_file --attn_file $OUTPUT_DIR/attn_wts.npy --input_test_file $dev_file
-    --answer_file $OUTPUT_DIR/out.txt --output_dir $OUTPUT_DIR"
+    --answer_file $OUTPUT_DIR/out.txt --output_dir $OUTPUT_DIR --vocab_dir $vocab_dir" 
  echo "Executing $cmd"
  $cmd
 fi

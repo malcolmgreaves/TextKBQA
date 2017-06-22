@@ -184,6 +184,7 @@ if __name__ == '__main__':
     parser.add_argument("--input_test_file", required=True)
     parser.add_argument("--k", default=5, type=int)
     parser.add_argument("--output_dir", required=True)
+    parser.add_argument("--vocab_dir", required=True)
 
     args = parser.parse_args()
     kb_file = args.kb_file
@@ -195,7 +196,7 @@ if __name__ == '__main__':
     input_test_file = args.input_test_file
     topk = args.k
     output_dir = args.output_dir
-    vocab_dir = "/home/rajarshi/research/joint-text-and-kb-inference-semantic-parsing/vocab"
+    vocab_dir = args.vocab_dir
     print('Reading entity vocab')
     entity_vocab = json.load(open(vocab_dir + '/entity_vocab.json'))
     rev_entity_vocab = {}
