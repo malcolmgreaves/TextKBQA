@@ -228,6 +228,7 @@ class Trainer(object):
 
         uniq = 0
         max_dev_u = 0
+        dev_eval = 0
 
         history_train_acc = []
         history_dev_acc = []
@@ -300,10 +301,11 @@ class Trainer(object):
                     # predict on dev
                     if terminate or (batch_counter != 0 and batch_counter % dev_eval_counter == 0):
                         dev_acc, dev_loss = self.dev_eval(sess)
+                        dev_eval += 1
 
                         if dev_acc > max_dev_acc:
                             max_dev_acc = dev_acc
-                            max_dev_u = uniq
+                            max_dev_u = dev_eval
 
                         print('\t at iter {0:10d} at time {1:10.4f}s dev loss: {2:10.8f} dev_acc: '
                               '{3:10.8f} '.format(batch_counter, time.time() - self.start_time,
@@ -339,7 +341,7 @@ class Trainer(object):
                             save_path = self.saver.save(sess, output_dir+'/'+model_suffix)
                             print("Saved model")
 
-                        if dev_acc < max_dev_acc and uniq - max_dev_u > 10:
+                        if dev_acc < max_dev_acc and abs(dev_eval - max_dev_u) > 10:
                             print("Terminating because we have not seen a better development set "
                                   "accuracy {:.8f} for the last 10 dev set tests (since test "
                                   "{}).".format(max_dev_acc, max_dev_u))
