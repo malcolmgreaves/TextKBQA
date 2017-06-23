@@ -35,7 +35,7 @@ fi
 
 echo "Testing"
 
-cmd="$python_path -u $ROOT_DIR/code/train.py --train_file $train_file --dev_file $dev_file \
+cmd="$python_path -u $ROOT_DIR/code/train.py --train_file $test_file --dev_file $dev_file \
 --kb_file $kb_file --text_kb_file $text_kb_file --vocab_dir $vocab_dir --max_facts $max_facts --min_facts $min_facts \
 --max_text_facts $max_text_facts --dev_max_facts $dev_max_facts --dev_max_text_facts $dev_max_text_facts
 --entity_vocab_size $entity_vocab_size --relation_vocab_size $relation_vocab_size \

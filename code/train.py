@@ -212,6 +212,7 @@ class Trainer(object):
         train_acc = 0.0
 
         history_train_acc = []
+        history_dev_acc = []
         stopping_range = 2
         tolerance = 1e-6
         terminate = False
@@ -271,28 +272,30 @@ class Trainer(object):
                     train_loss = 0.98 * train_loss + 0.02 * batch_loss_value
                     train_acc = 0.98 * train_acc + 0.02 * batch_train_acc
 
+                    history_train_acc.append(train_acc)
+
                     print('\t at iter {0:10d} at time {1:10.8f}s train loss: {2:10.8f}, train_acc: {3:10.8f} '.format(
                         batch_counter,
                         time.time() - self.start_time,
                         train_loss, train_acc))
 
-                    if len(history_train_acc) >= stopping_range:
-                        avg_recent_train_acc = sum(
-                            history_train_acc[-stopping_range:]) / float(stopping_range)
-
-                        if abs(avg_recent_train_acc - train_acc) <= tolerance:
-                            print("Stopping training because recent difference in train accuracy "
-                                  "is smaller than {} ({} - {})".format(tolerance,
-                                                                        avg_recent_train_acc,
-                                                                        train_acc))
-                            terminate = True
-
-                    history_train_acc.append(train_acc)
-
                     if terminate or (batch_counter != 0 and batch_counter % dev_eval_counter == 0):  # predict on dev
                         dev_acc, dev_loss = self.dev_eval(sess)
                         print('\t at iter {0:10d} at time {1:10.4f}s dev loss: {2:10.4f} dev_acc: {3:10.4f} '.format(
                             batch_counter, time.time() - self.start_time, dev_loss, dev_acc))
+
+                        if len(history_dev_acc) >= history_dev_acc:
+                            recent_dev = sum(history_train_acc[-stopping_range:]) / float(stopping_range)  # NOQA
+
+                            if abs(recent_dev - dev_acc) <= tolerance:
+                                print("Stopping training because recent difference in dev accuracy "
+                                      "is smaller than {} ({} - {})".format(tolerance,
+                                                                            recent_dev,
+                                                                            dev_acc))
+                                terminate = True
+
+                        history_dev_acc.append(dev_acc)
+
                         if dev_acc > self.max_dev_acc:
                             self.max_dev_acc = dev_acc
                             # save this model
