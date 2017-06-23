@@ -10,14 +10,14 @@ vocab_dir="$ROOT_DIR/vocab/"
 #text_kb_file="$ROOT_DIR/text_kb/small_demo_text_kb.txt"
 
 #train_file="$ROOT_DIR/data_formatted/medium_train_with_kb_and_text_facts.json"
-train_file="$ROOT_DIR/data_formatted/large_train_with_kb_and_text_facts.json"
+#train_file="$ROOT_DIR/data_formatted/large_train_with_kb_and_text_facts.json"
 #dev_file="$ROOT_DIR/data_formatted/medium_dev_with_kb_and_text_facts.json"
 dev_file="$ROOT_DIR/data_formatted/large_dev_with_kb_and_text_facts.json"
 test_file="$ROOT_DIR/data_formatted/medium_test_with_kb_and_text_facts.json"
 #kb_file="$ROOT_DIR/kb/medium_freebase.spades.txt"
 text_kb_file="$ROOT_DIR/text_kb/text_kb.spades.txt"
 
-#train_file="$ROOT_DIR/data_formatted/train_with_kb_and_text_facts.json"
+train_file="$ROOT_DIR/data_formatted/train_with_kb_and_text_facts.json"
 #dev_file="$ROOT_DIR/data_formatted/dev_with_kb_and_text_facts.json"
 #test_file="$ROOT_DIR/data_formatted/test_with_kb_and_text_facts.json"
 kb_file="$ROOT_DIR/kb/freebase.spades.txt"
@@ -35,8 +35,8 @@ use_kb=1
 use_text=0
 gpu_id=0
 dev_batch_size=32
-dev_eval_counter=100
-save_counter=250
+dev_eval_counter=200
+save_counter=500
 batch_size=32
 entity_vocab_size=1817565
 relation_vocab_size=721

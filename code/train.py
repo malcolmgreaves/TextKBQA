@@ -23,7 +23,8 @@ class Trainer(object):
             with open(pretrained_vector_path, 'rb') as f:
                 entity_lookup_table = pickle.load(f)
             if verbose:
-                print("Loaded pretrained vectors of size: ", entity_lookup_table.shape)
+                print("Loaded pretrained vectors of size: ",
+                      entity_lookup_table.shape)
                 print("Entity vocab size: ", entity_vocab_size)
 
         # data
@@ -70,24 +71,34 @@ class Trainer(object):
     def initialize(self):
         #### inputs ####
         self.question = tf.placeholder(tf.int32, [None, None], name="question")
-        self.question_lengths = tf.placeholder(tf.int32, [None], name="question_lengths")
+        self.question_lengths = tf.placeholder(
+            tf.int32, [None], name="question_lengths")
         self.answer = tf.placeholder(tf.int32, [None], name="answer")
         if use_kb and use_text:
-            self.memory = tf.placeholder(tf.int32, [None, None, 3], name="memory")
-            self.text_key_mem = tf.placeholder(tf.int32, [None, None, None], name="key_mem")
-            self.text_key_len = tf.placeholder(tf.int32, [None, None], name="key_len")
-            self.text_val_mem = tf.placeholder(tf.int32, [None, None], name="val_mem")
+            self.memory = tf.placeholder(
+                tf.int32, [None, None, 3], name="memory")
+            self.text_key_mem = tf.placeholder(
+                tf.int32, [None, None, None], name="key_mem")
+            self.text_key_len = tf.placeholder(
+                tf.int32, [None, None], name="key_len")
+            self.text_val_mem = tf.placeholder(
+                tf.int32, [None, None], name="val_mem")
             # network output
             output = self.model(self.memory, self.text_key_mem, self.text_key_len, self.text_val_mem,
                                 self.question, self.question_lengths)
         elif use_kb:
-            self.memory = tf.placeholder(tf.int32, [None, None, 3], name="memory")
+            self.memory = tf.placeholder(
+                tf.int32, [None, None, 3], name="memory")
             # network output
-            output = self.model(self.memory, self.question, self.question_lengths)
+            output = self.model(self.memory, self.question,
+                                self.question_lengths)
         elif use_text:
-            self.text_key_mem = tf.placeholder(tf.int32, [None, None, None], name="key_mem")
-            self.text_key_len = tf.placeholder(tf.int32, [None, None], name="key_len")
-            self.text_val_mem = tf.placeholder(tf.int32, [None, None], name="val_mem")
+            self.text_key_mem = tf.placeholder(
+                tf.int32, [None, None, None], name="key_mem")
+            self.text_key_len = tf.placeholder(
+                tf.int32, [None, None], name="key_len")
+            self.text_val_mem = tf.placeholder(
+                tf.int32, [None, None], name="val_mem")
             # network output
             output = self.model(self.text_key_mem, self.text_key_len, self.text_val_mem, self.question,
                                 self.question_lengths)
@@ -97,14 +108,16 @@ class Trainer(object):
         self.predict_op = tf.argmax(self.probs, 1, name="predict_op")
 
         # loss
-        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(output, self.answer)
+        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+            output, self.answer)
         # COMMENT(manzilz): replace with mean?
         self.loss = tf.reduce_mean(cross_entropy, name="loss_op")
 
         if use_kb and use_text:
             # Graph created now load/save op for it
             # load the parameters for the kb only model
-            var_list = [v for v in tf.trainable_variables() if v.name.startswith('BiRNN/')]
+            var_list = [v for v in tf.trainable_variables(
+            ) if v.name.startswith('BiRNN/')]
             var_list += [self.model.entity_lookup_table, self.model.relation_lookup_table, self.model.W, self.model.b,
                          self.model.W1, self.model.b1, self.model.R[0]]
             self.saver = tf.train.Saver(var_list=var_list)
@@ -175,7 +188,8 @@ class Trainer(object):
             dev_prediction = np.expand_dims(dev_prediction, axis=1)
             dev_batch_answer = np.expand_dims(dev_batch_answer, axis=1)
             if dev_prediction is not None:
-                concat = np.concatenate((dev_prediction, dev_batch_answer), axis=1)
+                concat = np.concatenate(
+                    (dev_prediction, dev_batch_answer), axis=1)
                 preds.append(concat)
         dev_acc = (1.0 * dev_acc / num_dev_data)
         dev_loss = (1.0 * dev_loss / num_dev_data)
@@ -210,6 +224,8 @@ class Trainer(object):
         train_loss = 0.0
         batch_counter = 0
         train_acc = 0.0
+
+        uniq = 0
 
         history_train_acc = []
         history_dev_acc = []
@@ -279,7 +295,8 @@ class Trainer(object):
                         time.time() - self.start_time,
                         train_loss, train_acc))
 
-                    if terminate or (batch_counter != 0 and batch_counter % dev_eval_counter == 0):  # predict on dev
+                    # predict on dev
+                    if terminate or (batch_counter != 0 and batch_counter % dev_eval_counter == 0):
                         dev_acc, dev_loss = self.dev_eval(sess)
                         print('\t at iter {0:10d} at time {1:10.4f}s dev loss: {2:10.4f} dev_acc: {3:10.4f} '.format(
                             batch_counter, time.time() - self.start_time, dev_loss, dev_acc))
@@ -293,25 +310,32 @@ class Trainer(object):
                                                                             recent_dev,
                                                                             dev_acc))
                                 terminate = True
-
                         history_dev_acc.append(dev_acc)
+
+                        model_suffix = "out.ckpt_{}".format(uniq)
 
                         if dev_acc > self.max_dev_acc:
                             self.max_dev_acc = dev_acc
                             # save this model
-                            save_path = self.saver.save(sess, output_dir + "/max_dev_out.ckpt")
+                            model_name = "max_dev_{}".format(model_suffix)
+                            save_path = self.saver.save(sess,
+                                                        "{}/{}".format(output_dir, model_name))
                             if use_kb and use_text:
-                                save_path = self.full_saver.save(
-                                    sess, output_dir + "/full_max_dev_out.ckpt")
-                            with open(output_dir + "/dev_accuracies.txt", mode='a') as out:
-                                out.write(
-                                    'Dev accuracy while writing max_dev_out.ckpt {0:10.4f}\n'.format(self.max_dev_acc))
+                                save_path = self.full_saver.save(sess,
+                                                                 "{}/full_{}".format(output_dir,
+                                                                                     model_name))
+                            with open("{}/dev_accuracies_{}.txt".format(output_dir, uniq)
+                                      mode='a') as out:
+                                out.write("Dev accuracy while writing "
+                                          "{} {0:10.4f}\n".format(model_name, self.max_dev_acc))
                             print("Saved model")
 
                         if terminate or (batch_counter % save_counter == 0):
-                            save_path = self.saver.save(sess, output_dir + "/out.ckpt")
+                            save_path = self.saver.save(sess,
+                                                        "{}/{}".format(output_dir, model_suffix))
                             print("Saved model")
-
+                    uniq += 1
+                    
                     if terminate:
                         print("Ending becuase terminate is now true")
                         return
