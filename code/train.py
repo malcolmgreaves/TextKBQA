@@ -226,12 +226,14 @@ class Trainer(object):
         train_acc = 0.0
 
         uniq = 0
+        max_dev_u = 0
 
         history_train_acc = []
         history_dev_acc = []
         stopping_range = 2
         tolerance = 1e-6
         terminate = False
+        max_dev_acc = 0.0
 
         with tf.Session(config=tf.ConfigProto(log_device_placement=False)) as sess:
             sess.run(self.initialize())
@@ -298,7 +300,12 @@ class Trainer(object):
                     # predict on dev
                     if terminate or (batch_counter != 0 and batch_counter % dev_eval_counter == 0):
                         dev_acc, dev_loss = self.dev_eval(sess)
-                        print('\t at iter {0:10d} at time {1:10.4f}s dev loss: {2:10.4f} dev_acc: {3:10.4f} '.format(
+
+                        if dev_acc > max_dev_acc:
+                            max_dev_acc = dev_acc
+                            max_dev_u += 1
+
+                        print('\t at iter {0:10d} at time {1:10.4f}s dev loss: {2:10.8f} dev_acc: {3:10.8f} '.format(
                             batch_counter, time.time() - self.start_time, dev_loss, dev_acc))
 
                         if len(history_dev_acc) >= history_dev_acc:
@@ -327,15 +334,21 @@ class Trainer(object):
                             with open("{}/dev_accuracies_{}.txt".format(output_dir, uniq)
                                       mode='a') as out:
                                 out.write("Dev accuracy while writing "
-                                          "{} {0:10.4f}\n".format(model_name, self.max_dev_acc))
+                                          "{} {0:10.12f}\n".format(model_name, self.max_dev_acc))
                             print("Saved model")
 
                         if terminate or (batch_counter % save_counter == 0):
                             save_path = self.saver.save(sess,
                                                         "{}/{}".format(output_dir, model_suffix))
                             print("Saved model")
+
+                        if dev_acc < max_dev_acc and uniq - max_dev_u > 10:
+                            print("Terminating because we have not seen a better development set "
+                                  "accuracy {2:10.8f} for the last 10 dev set tests (since test "
+                                  "{}).".format(max_dev_acc, max_dev_u))
+                            terminate = True
                     uniq += 1
-                    
+
                     if terminate:
                         print("Ending becuase terminate is now true")
                         return
