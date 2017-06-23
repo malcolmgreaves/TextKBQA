@@ -200,8 +200,9 @@ class Trainer(object):
 
         self.dev_batcher.reset()
         if dev_acc >= 0.3 or mode == 'test':
-            f_out = open(output_dir + "/out_txt." + str(dev_acc), 'w')
-            print('Writing to {}'.format("out_txt." + str(dev_acc)))
+            f_out_name = 'out_txt.{}'.format(dev_acc)
+            f_out = open(output_dir+"/"+f_out_name, 'w')
+            print('Writing to '+f_out_name)
 
             preds = np.vstack(preds)
             preds.tofile(f_out)
@@ -213,9 +214,9 @@ class Trainer(object):
             f_out.close()
             # self.write_to_file(self.dev_batcher, dev_acc, sess)
 
-        print(
-            'It took {0:10.4f}s to evaluate on dev set of size: {3:10d} with dev loss: {1:10.4f} and dev acc: {2:10.4f}'.format(
-                time.time() - dev_start_time, dev_loss, dev_acc, num_dev_data))
+        print("It took {0:10.4f}s to evaluate on dev set of size: {3:10d} with dev loss: {1:10.4f} "
+              "and dev acc: {2: 10.4f}".format(time.time() - dev_start_time, dev_loss, dev_acc,
+                                               num_dev_data))
 
         return dev_acc, dev_loss
 
@@ -239,7 +240,7 @@ class Trainer(object):
             sess.run(self.initialize())
 
             if load_model:
-                print('Loading retrained model from {}'.format(model_path))
+                print('Loading retrained model from '+model_path)
                 self.saver.restore(sess, model_path)
 
                 if mode == 'test':
@@ -292,10 +293,9 @@ class Trainer(object):
 
                     history_train_acc.append(train_acc)
 
-                    print('\t at iter {0:10d} at time {1:10.8f}s train loss: {2:10.8f}, train_acc: {3:10.8f} '.format(
-                        batch_counter,
-                        time.time() - self.start_time,
-                        train_loss, train_acc))
+                    print('\t at iter {0:10d} at time {1:10.8f}s train loss: {2:10.8f}, train_acc: '
+                          '{3:10.8f} '.format(batch_counter, time.time() - self.start_time,
+                                              train_loss, train_acc))
 
                     # predict on dev
                     if terminate or (batch_counter != 0 and batch_counter % dev_eval_counter == 0):
@@ -305,17 +305,17 @@ class Trainer(object):
                             max_dev_acc = dev_acc
                             max_dev_u += 1
 
-                        print('\t at iter {0:10d} at time {1:10.4f}s dev loss: {2:10.8f} dev_acc: {3:10.8f} '.format(
-                            batch_counter, time.time() - self.start_time, dev_loss, dev_acc))
+                        print('\t at iter {0:10d} at time {1:10.4f}s dev loss: {2:10.8f} dev_acc: '
+                              '{3:10.8f} '.format(batch_counter, time.time() - self.start_time,
+                                                  dev_loss, dev_acc))
 
                         if len(history_dev_acc) >= history_dev_acc:
                             recent_dev = sum(history_train_acc[-stopping_range:]) / float(stopping_range)  # NOQA
 
                             if abs(recent_dev - dev_acc) <= tolerance:
-                                print("Stopping training because recent difference in dev accuracy "
-                                      "is smaller than {} ({} - {})".format(tolerance,
-                                                                            recent_dev,
-                                                                            dev_acc))
+                                print("Stopping training because recent difference in dev accuracy"
+                                      " is smaller than {} ({} - {})".format(tolerance, recent_dev,
+                                                                             dev_acc))
                                 terminate = True
                         history_dev_acc.append(dev_acc)
 
@@ -324,27 +324,24 @@ class Trainer(object):
                         if dev_acc > self.max_dev_acc:
                             self.max_dev_acc = dev_acc
                             # save this model
-                            model_name = "max_dev_{}".format(model_suffix)
-                            save_path = self.saver.save(sess,
-                                                        "{}/{}".format(output_dir, model_name))
+                            model_name = "max_dev_"+model_suffix
+                            save_path = self.saver.save(sess, output_dir+"/"+model_name)
                             if use_kb and use_text:
                                 save_path = self.full_saver.save(sess,
-                                                                 "{}/full_{}".format(output_dir,
-                                                                                     model_name))
+                                                                 output_dir+"/full_"+model_name)
                             with open("{}/dev_accuracies_{}.txt".format(output_dir, uniq),
                                       mode='a') as out:
-                                out.write("Dev accuracy while writing "
-                                          "{} {:.12f}\n".format(model_name, self.max_dev_acc))
+                                out.write("Dev accuracy while writing {} {:.12f}\n".format(
+                                    model_name, self.max_dev_acc))
                             print("Saved model")
 
                         if terminate or (batch_counter % save_counter == 0):
-                            save_path = self.saver.save(sess,
-                                                        "{}/{}".format(output_dir, model_suffix))
+                            save_path = self.saver.save(sess, output_dir+'/'+model_suffix)
                             print("Saved model")
 
                         if dev_acc < max_dev_acc and uniq - max_dev_u > 10:
                             print("Terminating because we have not seen a better development set "
-                                  "accuracy {2:10.8f} for the last 10 dev set tests (since test "
+                                  "accuracy {:.8f} for the last 10 dev set tests (since test "
                                   "{}).".format(max_dev_acc, max_dev_u))
                             terminate = True
                     uniq += 1
