@@ -331,7 +331,7 @@ class Trainer(object):
                                 save_path = self.full_saver.save(sess,
                                                                  "{}/full_{}".format(output_dir,
                                                                                      model_name))
-                            with open("{}/dev_accuracies_{}.txt".format(output_dir, uniq)
+                            with open("{}/dev_accuracies_{}.txt".format(output_dir, uniq),
                                       mode='a') as out:
                                 out.write("Dev accuracy while writing "
                                           "{} {0:10.12f}\n".format(model_name, self.max_dev_acc))
