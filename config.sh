@@ -10,15 +10,16 @@ vocab_dir="$ROOT_DIR/vocab/"
 #text_kb_file="$ROOT_DIR/text_kb/small_demo_text_kb.txt"
 
 train_file="$ROOT_DIR/data_formatted/medium_train_with_kb_and_text_facts.json"
-dev_file="$ROOT_DIR/data_formatted/medium_dev_with_kb_and_text_facts.json"
+#dev_file="$ROOT_DIR/data_formatted/medium_dev_with_kb_and_text_facts.json"
+dev_file="$ROOT_DIR/data_formatted/large_dev_with_kb_and_text_facts.json"
 test_file="$ROOT_DIR/data_formatted/medium_test_with_kb_and_text_facts.json"
-kb_file="$ROOT_DIR/kb/medium_freebase.spades.txt"
-text_kb_file="$ROOT_DIR/text_kb/medium_text_kb.spades.txt"
+#kb_file="$ROOT_DIR/kb/medium_freebase.spades.txt"
+text_kb_file="$ROOT_DIR/text_kb/text_kb.spades.txt"
 
 #train_file="$ROOT_DIR/data_formatted/train_with_kb_and_text_facts.json"
 #dev_file="$ROOT_DIR/data_formatted/dev_with_kb_and_text_facts.json"
 #test_file="$ROOT_DIR/data_formatted/test_with_kb_and_text_facts.json"
-#kb_file="$ROOT_DIR/kb/freebase.spades.txt"
+kb_file="$ROOT_DIR/kb/freebase.spades.txt"
 #text_kb_file="$ROOT_DIR/text_kb/text_kb.spades.txt"
 
 combine_text_kb_answer='batch_norm'
@@ -29,7 +30,8 @@ model_path='path/to/trained/model' # path to trained model
 load_pretrained_vectors=0
 pretrained_vector_path='/path/to/pretrained/vectors'
 use_kb=1
-use_text=1
+#use_text=1
+use_text=0
 gpu_id=0
 dev_batch_size=32
 dev_eval_counter=100
