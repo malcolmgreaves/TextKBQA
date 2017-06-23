@@ -334,7 +334,7 @@ class Trainer(object):
                             with open("{}/dev_accuracies_{}.txt".format(output_dir, uniq),
                                       mode='a') as out:
                                 out.write("Dev accuracy while writing "
-                                          "{} {0:10.12f}\n".format(model_name, self.max_dev_acc))
+                                          "{} {:.12f}\n".format(model_name, self.max_dev_acc))
                             print("Saved model")
 
                         if terminate or (batch_counter % save_counter == 0):
