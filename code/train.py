@@ -303,7 +303,7 @@ class Trainer(object):
 
                         if dev_acc > max_dev_acc:
                             max_dev_acc = dev_acc
-                            max_dev_u += 1
+                            max_dev_u = uniq
 
                         print('\t at iter {0:10d} at time {1:10.4f}s dev loss: {2:10.8f} dev_acc: '
                               '{3:10.8f} '.format(batch_counter, time.time() - self.start_time,
