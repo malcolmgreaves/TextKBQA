@@ -35,7 +35,7 @@ cmd="$python_path -u $ROOT_DIR/code/train.py \
 --batch_size $batch_size \
 --output_dir $OUTPUT_DIR \
 --load_model 1 \
---model_path $DIR/max_dev_out.ckpt_20999.data-00000-of-00001 \
+--model_path $DIR/max_dev_out.ckpt_20999 \
 --load_pretrained_vectors $load_pretrained_vectors \
 --pretrained_vector_path $pretrained_vector_path \
 --save_counter $save_counter \
@@ -47,6 +47,8 @@ cmd="$python_path -u $ROOT_DIR/code/train.py \
 --combine_text_kb_answer $combine_text_kb_answer \
 --separate_key_lstm $separate_key_lstm"
 
+# --model_path $DIR/max_dev_out.ckpt_20999.meta \
+# --model_path $DIR/max_dev_out.ckpt_20999.data-00000-of-00001 \
 #--attn_file $DIR/attn_wts.npy 
 
 echo "Executing $cmd"
