@@ -11,6 +11,8 @@ python_path=`which python`
 
 echo "Testing"
 
+DIR="/home/malcolm/dev/oss/rajarshd/TextKBQA/expt_outputs/demo_run/2017.06.23-09.11.01"
+
 cmd="$python_path -u $ROOT_DIR/code/train.py \
 --train_file $test_file \
 --dev_file $dev_file \
@@ -32,8 +34,8 @@ cmd="$python_path -u $ROOT_DIR/code/train.py \
 --dev_batch_size $dev_batch_size \
 --batch_size $batch_size \
 --output_dir $OUTPUT_DIR \
---load_model $load_model \
---model_path $model_path \
+--load_model 1 \
+--model_path $DIR/max_dev_out.ckpt_20999.data-00000-of-00001 \
 --load_pretrained_vectors $load_pretrained_vectors \
 --pretrained_vector_path $pretrained_vector_path \
 --save_counter $save_counter \
@@ -44,6 +46,8 @@ cmd="$python_path -u $ROOT_DIR/code/train.py \
 --mode test \
 --combine_text_kb_answer $combine_text_kb_answer \
 --separate_key_lstm $separate_key_lstm"
+
+#--attn_file $DIR/attn_wts.npy 
 
 echo "Executing $cmd"
 CUDA_VISIBLE_DEVICES=$gpu_id $cmd
