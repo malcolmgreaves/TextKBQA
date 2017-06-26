@@ -339,7 +339,7 @@ class Trainer(object):
 
                         if terminate or (batch_counter % save_counter == 0):
                             save_path = self.saver.save(sess, output_dir+'/'+model_suffix)
-                            print("Saved model")
+                            print("Saved model: %s" % save_path)
 
                         if dev_acc < max_dev_acc and abs(dev_eval - max_dev_u) > 10:
                             print("Terminating because we have not seen a better development set "
