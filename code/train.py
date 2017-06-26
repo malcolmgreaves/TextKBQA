@@ -335,7 +335,7 @@ class Trainer(object):
                                       mode='a') as out:
                                 out.write("Dev accuracy while writing {} {:.12f}\n".format(
                                     model_name, self.max_dev_acc))
-                            print("Saved model")
+                            print("Saved model: %s" % save_path)
 
                         if terminate or (batch_counter % save_counter == 0):
                             save_path = self.saver.save(sess, output_dir+'/'+model_suffix)
