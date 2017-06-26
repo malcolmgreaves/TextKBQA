@@ -11,13 +11,18 @@ python_path=`which python`
 
 echo "Testing"
 
-DIR="/home/malcolm/dev/oss/rajarshd/TextKBQA/expt_outputs/demo_run/2017.06.23-09.11.01"
 
-echo "test file: $test_file"
+# 20799
+# 20999
+# 21999
+# 22999
+
+
+DIR="/home/malcolm/dev/oss/rajarshd/TextKBQA/expt_outputs/demo_run/2017.06.23-09.11.01"
 
 cmd="$python_path -u $ROOT_DIR/code/train.py \
 --train_file $test_file \
---dev_file $test_file \
+--dev_file $dev_file \
 --kb_file $kb_file \
 --text_kb_file $text_kb_file \
 --vocab_dir $vocab_dir \
