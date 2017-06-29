@@ -8,3 +8,8 @@ data_formatted/dev_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -te
 data_formatted/large_train_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
 data_formatted/medium_test_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
 data_formatted/small_dev_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+kb/freebase.spades.txt filter=lfs diff=lfs merge=lfs -text
+kb/medium_freebase.spades.txt filter=lfs diff=lfs merge=lfs -text
+kb/small_demo_kb.txt filter=lfs diff=lfs merge=lfs -text
+text_kb/small_demo_text_kb.txt filter=lfs diff=lfs merge=lfs -text
+text_kb/text_kb.spades.txt filter=lfs diff=lfs merge=lfs -text
