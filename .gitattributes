@@ -1,0 +1,10 @@
+data_formatted/large_dev_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+data_formatted/medium_dev_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+data_formatted/medium_train_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+data_formatted/small_train_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+data_formatted/test_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+data_formatted/train_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+data_formatted/dev_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+data_formatted/large_train_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+data_formatted/medium_test_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
+data_formatted/small_dev_with_kb_and_text_facts.json filter=lfs diff=lfs merge=lfs -text
